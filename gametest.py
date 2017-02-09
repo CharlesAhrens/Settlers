@@ -7,10 +7,11 @@ root = Tk()
 
 class Hex:
     """Returns a hexagon generator for hexagons of the specified size."""
-    def __init__(self, num, terrain):
+    def __init__(self, num, terrain, name):
 
         self.roll_num = num
         self.terrain = terrain
+        self.name = name
 
         if terrain == 'field':
             self.color = '#ffcc66' 
@@ -24,6 +25,7 @@ class Hex:
             self.color = '#cc6600'
         elif terrain == 'desert':
             self.color = '#ffffcc'
+
     def setCoords(self, coords):
         self.coords = coords
         
@@ -56,8 +58,7 @@ def drawboard(canvas, tiles):
     for h in tiles:
         coords = generate_hex(length,(x,y))
         color = 'red'
-        #name = h.roll_num
-        canvas.create_polygon(coords, fill = h.color,outline='black',stipple='gray75',activeoutline='red',activewidth=3)
+        canvas.create_polygon(coords, tag=h.name ,fill = h.color,outline='black',stipple='gray75',activeoutline='red',activewidth=3)
 
         i += 1
         if i < 3 or (i > 3 and i <7) or (i>7 and i< 12) or (i>12 and i<16) or (i>16 and i<20):
@@ -79,11 +80,40 @@ def drawboard(canvas, tiles):
 def makenewboard():
     random.seed()
     board = []
-    for i in range(19):
-        terr = ['field','forest','pasture','mountains','hills','desert']
-        terrain = random.choice(terr)
-        tile = Hex(i,terrain)
+    #for i in range(19):
+        #terr = ['field','forest','pasture','mountains','hills','desert']
+    for j in range(4):
+        terrain = 'field'
+        name = 'field'+str(j)
+        tile = Hex(j,terrain,name)
         board.append(tile)
+
+        terrain = 'pasture'
+        name = 'pasture'+str(j)
+        tile = Hex(j,terrain,name)
+        board.append(tile)
+
+        terrain = 'forest'
+        name = 'forest'+str(j)
+        tile = Hex(j,terrain,name)
+        board.append(tile)
+
+    for k in range(3):
+        terrain = 'mountains'
+        name = 'mountains'+str(k)
+        tile = Hex(k,terrain,name)
+        board.append(tile)
+
+        terrain = 'hills'
+        name = 'hills'+str(k)
+        tile = Hex(k,terrain,name)
+        board.append(tile)
+     
+    terrain = 'desert'
+    name = 'desert'
+    tile = Hex(7,terrain,name)
+    board.append(tile)
+    random.shuffle(board)
 
     return board
 
@@ -109,26 +139,24 @@ def click(event):
         w.update_idletasks()
         w.after(200)
         w.itemconfig(CURRENT,width = 1)
-        fill = w.itemcget(ids, "fill")
-    #    if fill = '#ffcc66':
-    #        terrain = 'field'
-    #    elif fill = 
-    #  self.stipple = 'gray25'
-    #elif terrain == 'forest':
-    #  self.color = '#009933'
-    #  self.stipple = 'gray50'
-    #elif terrain == 'pasture':
-    #  self.color = '#ccff66'
-    #  self.stipple = 'gray25'
-    #elif terrain == 'mountains':
-    #  self.color = '#808080'
-    #  self.stipple = 'gray75'
-    #elif terrain == 'hills':
-    #  self.color = '#cc6600'
-    #  self.stipple = 'gray25'
-    #elif terrain == 'desert':
-    #  self.color = '#ffffcc'
-    #  self.stipple = 'gray12'
+        print(w.itemcget(ids,'tag'))
+        #fill = w.itemcget(ids, "fill")
+   #     if fill == '#ffcc66':
+   #         terrain = 'field'
+   #     elif fill == '#009933':
+   #         terrain = 'forest':
+   #     elif fill == '#ccff66'
+   #         terrain = 'pasture':
+   #  self.stipple = 'gray25'
+   #elif terrain == 'mountains':
+   # self.color = '#808080'
+   #  self.stipple = 'gray75'
+   #elif terrain == 'hills':
+   #  self.color = '#cc6600'
+   #  self.stipple = 'gray25'
+   #elif terrain == 'desert':
+   #  self.color = '#ffffcc'
+   #  self.stipple = 'gray12'
 
 w.bind("<Button-1>", click)
 

@@ -1,5 +1,15 @@
-﻿################################################################################
+################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sln
+*.pyproj
+
 /settlers.pyproj
+/settlers.sln
+/.vs/settlers/v14
+/.vs/Catan/v14

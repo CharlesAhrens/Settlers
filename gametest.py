@@ -88,23 +88,11 @@ def drawboard(canvas, tiles):
         elif i == 16:
             x = orig_x + 4*xspace
             y = orig_y
-def makenewboard():
-    ''' 
-           __
-        __/  \__
-     __/  \_7/  \__
-    /  \_3/  \12/  \
-    \_0/  \_8/  \16/
-    /  \_4/  \13/  \
-    \_1/  \_9/  \17/
-    /  \_5/  \14/  \
-    \_2/  \10/  \18/
-       \_6/  \15/ 
-          \11/ 
-    '''
+
+def conflicts(board):
     #for 0 neighbors =                      i+1 i+3 i+4
     #for 1 neighbors =                  i-1 i+1 i+3 i+4
-    #for 2 neighbors =                  i-1 i+1 i+3 i+4
+    #for 2 neighbors =                  i-1     i+3 i+4
     #for 3 neighbors =              i-3     i+1     i+4 i+5
     #for 4 neighbors =          i-4 i-3 i-1 i+1     i+4 i+5
     #for 5 neighbors =          i-4 i-3 i-1 i+1     i+4 i+5
@@ -121,6 +109,36 @@ def makenewboard():
     #for 16 neighbors =         i-4 i-3     i+1
     #for 17 neighbors =         i-4 i-3 i-1 i+1
     #for 18 neighbors =         i-4 i-3 i-1     
+
+    reds = []
+    conflict = 0
+    for i in range(len(board)):
+        if board[i].roll_num == 6 or board[i].roll_num == 8:
+            reds.append(i)
+    print(reds)
+    for i in range (len(reds)):
+        if reds[i]+1 in reds or reds[i]+3 in reds or reds[i]+4 in reds or reds[i]+5 in reds:
+            conflict +=1
+    print(conflict)
+    
+    return conflict
+
+
+def makenewboard():
+    ''' 
+           __
+        __/  \__
+     __/  \_7/  \__
+    /  \_3/  \12/  \
+    \_0/  \_8/  \16/
+    /  \_4/  \13/  \
+    \_1/  \_9/  \17/
+    /  \_5/  \14/  \
+    \_2/  \10/  \18/
+       \_6/  \15/ 
+          \11/ 
+    '''
+
 
     random.seed()
     board = []
@@ -161,7 +179,10 @@ def makenewboard():
     tile = Hex(7,terrain,name)
     board.append(tile)
     random.shuffle(board)
-    
+
+    while (conflicts(board)):
+        random.shuffle(board)
+
     return board
 
 

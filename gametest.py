@@ -185,10 +185,15 @@ def makenewboard():
     return board
 
 
+def shuffleboard(board):
+    while (conflicts(board)):
+        random.shuffle(board)
+
+
 w = Canvas(root, width=800, height=800)
 menubar = Menu(root)
 hexlist = makenewboard()
-menubar.add_command(label="shuffle board",command = lambda: random.shuffle(hexlist))
+menubar.add_command(label="shuffle board",command = lambda: shuffleboard(hexlist))
 menubar.add_command(label="draw board", command=lambda: drawboard(w,hexlist))
 menubar.add_command(label="quit",command=lambda: root.destroy())
 root.config(menu=menubar)

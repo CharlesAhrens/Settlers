@@ -115,11 +115,10 @@ def conflicts(board):
     for i in range(len(board)):
         if board[i].roll_num == 6 or board[i].roll_num == 8:
             reds.append(i)
-    print(reds)
+    
     for i in range (len(reds)):
         if reds[i]+1 in reds or reds[i]+3 in reds or reds[i]+4 in reds or reds[i]+5 in reds:
             conflict +=1
-    print(conflict)
     
     return conflict
 

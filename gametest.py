@@ -123,7 +123,7 @@ def conflicts(board):
     return conflict
 
 
-def makenewboard():
+def makenewboard(canvas):
     ''' 
            __
         __/  \__
@@ -138,7 +138,7 @@ def makenewboard():
           \11/ 
     '''
 
-
+    global hexlist
     random.seed()
     board = []
     nums = [2,3,3,4,4,5,5,6,6,8,8,9,9,10,10,11,11,12]
@@ -182,20 +182,49 @@ def makenewboard():
     while (conflicts(board)):
         random.shuffle(board)
 
-    return board
+    hexlist = board
+    drawboard(canvas,hexlist)
 
 
-def shuffleboard(board):
-    while (conflicts(board)):
-        random.shuffle(board)
+def shuffleboard(canvas):
+    canvas.delete(all)
+    global hexlist
+    random.shuffle(hexlist)
+    drawboard(canvas,hexlist)
 
+def donothing():
+   filewin = Toplevel(root)
+   button = Button(filewin, text="Do nothing button")
+   button.pack()
 
 w = Canvas(root, width=800, height=800)
 menubar = Menu(root)
-hexlist = makenewboard()
-menubar.add_command(label="shuffle board",command = lambda: shuffleboard(hexlist))
-menubar.add_command(label="draw board", command=lambda: drawboard(w,hexlist))
-menubar.add_command(label="quit",command=lambda: root.destroy())
+
+setupmenu = Menu(menubar, tearoff=0)
+setupmenu.add_command(label="Make a New Board",command = lambda: makenewboard(w))
+setupmenu.add_command(label="Shuffle Board", command = lambda: shuffleboard(w))
+setupmenu.add_separator()
+setupmenu.add_command(label="Play", command = donothing)
+menubar.add_cascade(label="Setup", menu = setupmenu)
+
+
+filemenu = Menu(menubar, tearoff=0)
+
+filemenu.add_command(label="Load Game", command=donothing)
+filemenu.add_command(label="Save Game", command=donothing)
+filemenu.add_command(label="Save as...", command=donothing)
+
+filemenu.add_separator()
+
+filemenu.add_command(label="Exit", command=lambda: root.destroy())
+menubar.add_cascade(label="File", menu=filemenu)
+
+helpmenu = Menu(menubar, tearoff=0)
+helpmenu.add_command(label="Help Index", command=donothing)
+helpmenu.add_command(label="About...", command=donothing)
+menubar.add_cascade(label="Help", menu=helpmenu)
+
+
 root.config(menu=menubar)
 w.pack()
 

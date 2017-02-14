@@ -6,7 +6,7 @@ root = Tk()
 
 
 class Hex:
-    """Returns a hexagon generator for hexagons of the specified size."""
+    '''Returns a hexagon generator for hexagons of the specified size.'''
     def __init__(self, num, terrain, name):
 
         self.roll_num = num
@@ -31,7 +31,7 @@ class Hex:
         
         
 def generate_hex(edge_length, offset):
-    """Generator for coordinates in a hexagon."""
+    '''Generator for coordinates in a hexagon.'''
     coords = []
     x, y = offset
     coords.append([x,y])
@@ -44,7 +44,7 @@ def generate_hex(edge_length, offset):
     return coords
 
 
-def drawboard(canvas, tiles):
+def drawboard(canvas, tiles, harbors):
 
     canvas.delete(all)
     length = 50
@@ -57,12 +57,35 @@ def drawboard(canvas, tiles):
     y = orig_y
     i = 0
 
+    harbtext = []
+    harbcolor = []
+    for j in range(0,len(harbors)):
+        if harbors[j] == 'three':
+            harbtext.append('3:1')
+            harbcolor.append('blue')
+        elif harbors[j] == 'brick':
+            harbcolor.append('red')
+            harbtext.append('2:1')
+        elif harbors[j] == 'ore':
+            harbcolor.append('grey')
+            harbtext.append('2:1')            
+        elif harbors[j] == 'grain':
+            harbcolor.append('orange')
+            harbtext.append('2:1')
+        elif harbors[j] == 'lumber':
+            harbcolor.append('brown')
+            harbtext.append('2:1')
+        elif harbors[j] == 'wool':
+            harbcolor.append('white')
+            harbtext.append('2:1') 
+
     canvas.create_polygon([425,30,685,180,685,480,425,630,165,480,165,180], fill = 'cyan',stipple = 'gray50', width = 0)
     for h in tiles:
         coords = generate_hex(length,(x,y))
         color = 'red'
         canvas.create_polygon(coords,fill = 'white', width = 0)
         canvas.create_polygon(coords, tag=h.name ,fill = h.color,outline=h.color,stipple='gray75',activeoutline='red',activewidth=3)
+        
         if h.name != 'desert':
             textcolor = 'black'
             if h.roll_num == 6 or h.roll_num == 8:
@@ -71,6 +94,28 @@ def drawboard(canvas, tiles):
             canvas.create_text(x+25,y+44,text = str(h.roll_num),fill = textcolor)
         if h.name == 'desert':
             canvas.create_oval(x+12,y+31,x+38,y+57,fill = 'grey', stipple = 'gray75', outline = 'gray')
+  
+        if i == 0:
+            canvas.create_text(x-25,y+10, text = harbtext[0], fill =harbcolor[0])
+        elif i == 3:
+            canvas.create_text(x+25,y-10, text = harbtext[1], fill =harbcolor[1])
+        elif i == 12:
+            canvas.create_text(x+25,y-10, text = harbtext[2], fill =harbcolor[2])
+        elif i == 16:
+            canvas.create_text(x+75,y+10, text = harbtext[3], fill =harbcolor[3])
+        elif i == 17:
+            canvas.create_text(x+75,y+75, text = harbtext[4], fill =harbcolor[4])
+        elif i == 15:
+            canvas.create_text(x+75,y+75, text = harbtext[5], fill =harbcolor[5])
+        elif i == 11:
+            canvas.create_text(x+25,y+100, text = harbtext[6], fill =harbcolor[6])
+        elif i == 6:
+            canvas.create_text(x-25,y+75, text = harbtext[7], fill =harbcolor[7])
+        elif i == 1:
+            canvas.create_text(x-25,y+75, text = harbtext[8], fill =harbcolor[8])
+
+                      
+
 
         i += 1
         if i < 3 or (i > 3 and i <7) or (i>7 and i< 12) or (i>12 and i<16) or (i>16 and i<20):
@@ -88,6 +133,9 @@ def drawboard(canvas, tiles):
         elif i == 16:
             x = orig_x + 4*xspace
             y = orig_y
+
+
+
 
 def conflicts(board):
     #for 0 neighbors =                      i+1 i+3 i+4
@@ -123,24 +171,27 @@ def conflicts(board):
     return conflict
 
 
-def makenewboard(canvas):
+def makenewboard(canvas, newharbors):
     ''' 
-           __
-        __/  \__
-     __/  \_7/  \__
-    /  \_3/  \12/  \
-    \_0/  \_8/  \16/
-    /  \_4/  \13/  \
-    \_1/  \_9/  \17/
-    /  \_5/  \14/  \
-    \_2/  \10/  \18/
-       \_6/  \15/ 
-          \11/ 
+           w  __  3:1
+          ,_,/  \,_,
+    3:1,__/  \_7/  \__, 3:1
+      ,/  \_3/  \12/  \,
+       \_0/  \_8/  \16/
+       /  \_4/  \13/  \
+    o ,\_1/  \_9/  \17/,' b
+       /  \_5/  \14/  \
+       \_2/  \10/  \18/
+       g  ,\_6/  \15/,' l 
+              \11/
+               ' ' 3:1 
     '''
 
     global hexlist
     random.seed()
     board = []
+
+    harbors = ['three','wool','three','three','brick','lumber','three','grain','ore']
     nums = [2,3,3,4,4,5,5,6,6,8,8,9,9,10,10,11,11,12]
     random.shuffle(nums)
     i = 0
@@ -183,46 +234,52 @@ def makenewboard(canvas):
         random.shuffle(board)
 
     hexlist = board
-    drawboard(canvas,hexlist)
+    drawboard(canvas,hexlist,harbors)
 
 
-def shuffleboard(canvas):
+def shuffleboard(canvas,newharbors):
     canvas.delete(all)
     global hexlist
     random.shuffle(hexlist)
-    drawboard(canvas,hexlist)
+    drawboard(canvas,hexlist,newharbors)
+
+
 
 def donothing():
    filewin = Toplevel(root)
-   button = Button(filewin, text="Do nothing button")
+   button = Button(filewin, text='Do nothing button')
    button.pack()
+
 
 w = Canvas(root, width=800, height=800)
 menubar = Menu(root)
 
+newharbors = 0
+makenewboard(w,newharbors)
 setupmenu = Menu(menubar, tearoff=0)
-setupmenu.add_command(label="Make a New Board",command = lambda: makenewboard(w))
-setupmenu.add_command(label="Shuffle Board", command = lambda: shuffleboard(w))
+setupmenu.add_checkbutton(label='Randomize Harbors', variable=newharbors)
+setupmenu.add_command(label='Make a New Board',command = lambda: makenewboard(w,newharbors))
+setupmenu.add_command(label='Shuffle Board', command = lambda: shuffleboard(w,newharbors))
 setupmenu.add_separator()
-setupmenu.add_command(label="Play", command = donothing)
-menubar.add_cascade(label="Setup", menu = setupmenu)
+setupmenu.add_command(label='Play', command = donothing)
+menubar.add_cascade(label='Setup', menu = setupmenu)
 
 
 filemenu = Menu(menubar, tearoff=0)
 
-filemenu.add_command(label="Load Game", command=donothing)
-filemenu.add_command(label="Save Game", command=donothing)
-filemenu.add_command(label="Save as...", command=donothing)
+filemenu.add_command(label='Load Game', command=donothing)
+filemenu.add_command(label='Save Game', command=donothing)
+filemenu.add_command(label='Save as...', command=donothing)
 
 filemenu.add_separator()
 
-filemenu.add_command(label="Exit", command=lambda: root.destroy())
-menubar.add_cascade(label="File", menu=filemenu)
+filemenu.add_command(label='Exit', command=lambda: root.destroy())
+menubar.add_cascade(label='File', menu=filemenu)
 
 helpmenu = Menu(menubar, tearoff=0)
-helpmenu.add_command(label="Help Index", command=donothing)
-helpmenu.add_command(label="About...", command=donothing)
-menubar.add_cascade(label="Help", menu=helpmenu)
+helpmenu.add_command(label='Help Index', command=donothing)
+helpmenu.add_command(label='About...', command=donothing)
+menubar.add_cascade(label='Help', menu=helpmenu)
 
 
 root.config(menu=menubar)
@@ -242,11 +299,10 @@ def click(event):
         if len(currhex) > 0:
             print(currhex[0].name)
             print(currhex[0].roll_num)
+            print(newharbors)
 
 
-w.bind("<Button-1>", click)
-
-
+w.bind('<Button-1>', click)
 
 mainloop()
 

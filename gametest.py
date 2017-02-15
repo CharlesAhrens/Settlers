@@ -50,8 +50,8 @@ def drawboard(canvas, tiles, harbors):
     length = 50
     orig_x = 250
     orig_y = 200
-    xspace = length*1.5+.5
-    yspace = length*0.866+.5
+    xspace = length*1.5+3
+    yspace = length*0.866+1
     vspace = yspace*2+1
     x = orig_x
     y = orig_y
@@ -83,8 +83,8 @@ def drawboard(canvas, tiles, harbors):
     for h in tiles:
         coords = generate_hex(length,(x,y))
         color = 'red'
-        canvas.create_polygon(coords,fill = 'white', width = 0)
-        canvas.create_polygon(coords, tag=h.name ,fill = h.color,outline=h.color,stipple='gray75',activeoutline='red',activewidth=3)
+        canvas.create_polygon(generate_hex(length+2,(x-1,y-1)),fill = '#ffffe6', outline = '#ffffe6', width = 0)
+        canvas.create_polygon(coords, tag=h.name ,fill = h.color,outline='#ffffe6',stipple='gray75',activeoutline='red',activewidth=2)
         
         if h.name != 'desert':
             textcolor = 'black'
@@ -97,6 +97,7 @@ def drawboard(canvas, tiles, harbors):
   
         if i == 0:
             canvas.create_text(x-25,y+10, text = harbtext[0], fill =harbcolor[0])
+            canvas.create_polygon([x,y],[x-xspace,y+yspace],[x-xspace+10,y+yspace-10],[x-0.75*xspace,y+0.75*yspace],[x,y], fill = '#ffffe6')
         elif i == 3:
             canvas.create_text(x+25,y-10, text = harbtext[1], fill =harbcolor[1])
         elif i == 12:
@@ -289,10 +290,10 @@ w.pack()
 def click(event):
     if w.find_withtag(CURRENT):
         ids = w.find_withtag(CURRENT)
-        w.itemconfig(CURRENT, width = 4)
+        #w.itemconfig(CURRENT, width = 4)
         w.update_idletasks()
         w.after(200)
-        w.itemconfig(CURRENT,width = 1)
+        #w.itemconfig(CURRENT,width = 1)
         tags = w.itemcget(ids,'tag')
         name = tags.split(' ')[0]
         currhex = filter(lambda x: x.name == name, hexlist)

@@ -1,5 +1,6 @@
 from Tkinter import *
 import math
+import cmath
 import random
 
 root = Tk()
@@ -56,7 +57,8 @@ def drawboard(canvas, tiles, harbors):
     x = orig_x
     y = orig_y
     i = 0
-
+    
+    
     harbtext = []
     harbcolor = []
     for j in range(0,len(harbors)):
@@ -83,8 +85,8 @@ def drawboard(canvas, tiles, harbors):
     for h in tiles:
         coords = generate_hex(length,(x,y))
         color = 'red'
-        canvas.create_polygon(generate_hex(length+2,(x-1,y-1)),fill = '#ffffe6', outline = '#ffffe6', width = 0)
-        canvas.create_polygon(coords, tag=h.name ,fill = h.color,outline='#ffffe6',stipple='gray75',activeoutline='red',activewidth=2)
+        canvas.create_polygon(coords,fill = '#ffffe6', outline = '#ffffe6', width = 2)
+        canvas.create_polygon(coords, tag=h.name ,fill = h.color,outline='#ffffe6', width = 3, stipple='gray75',activeoutline='red',activewidth=2)
         
         if h.name != 'desert':
             textcolor = 'black'
@@ -94,25 +96,86 @@ def drawboard(canvas, tiles, harbors):
             canvas.create_text(x+25,y+44,text = str(h.roll_num),fill = textcolor)
         if h.name == 'desert':
             canvas.create_oval(x+12,y+31,x+38,y+57,fill = 'grey', stipple = 'gray75', outline = 'gray')
-  
+        
+
+        harborcoords = [x,y],[x+length,y], [x+length, y-length/4],[x+length-5,y-length/4],[x+length-10, y-5],[x+10, y-5],[x+5,y-length/4],[x+0,y-length/4],[x,y]
+ 
         if i == 0:
+            rotcoords = []
+            cangle = cmath.exp(5*3.141/3*1j)
+            center = complex(x+length/2,y+yspace)
+            for x,y in harborcoords:
+                v = cangle * (complex(x, y) - center) + center
+                rotcoords.append(v.real)
+                rotcoords.append(v.imag)
+            canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
             canvas.create_text(x-25,y+10, text = harbtext[0], fill =harbcolor[0])
-            canvas.create_polygon([x,y],[x-xspace,y+yspace],[x-xspace+10,y+yspace-10],[x-0.75*xspace,y+0.75*yspace],[x,y], fill = '#ffffe6')
+
         elif i == 3:
+            canvas.create_polygon(harborcoords, fill = '#ffffe6', width=2)
             canvas.create_text(x+25,y-10, text = harbtext[1], fill =harbcolor[1])
         elif i == 12:
+            canvas.create_polygon(harborcoords, fill = '#ffffe6', width=2)
             canvas.create_text(x+25,y-10, text = harbtext[2], fill =harbcolor[2])
         elif i == 16:
+            rotcoords = []
+            cangle = cmath.exp(3.141/3*1j)
+            center = complex(x+length/2,y+yspace)
+            for x,y in harborcoords:
+                v = cangle * (complex(x, y) - center) + center
+                rotcoords.append(v.real)
+                rotcoords.append(v.imag)
+            canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
             canvas.create_text(x+75,y+10, text = harbtext[3], fill =harbcolor[3])
         elif i == 17:
+            rotcoords = []
+            cangle = cmath.exp(2*3.141/3*1j)
+            center = complex(x+length/2,y+yspace)
+            for x,y in harborcoords:
+                v = cangle * (complex(x, y) - center) + center
+                rotcoords.append(v.real)
+                rotcoords.append(v.imag)
+            canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
             canvas.create_text(x+75,y+75, text = harbtext[4], fill =harbcolor[4])
         elif i == 15:
+            rotcoords = []
+            cangle = cmath.exp(2*3.141/3*1j)
+            center = complex(x+length/2,y+yspace)
+            for x,y in harborcoords:
+                v = cangle * (complex(x, y) - center) + center
+                rotcoords.append(v.real)
+                rotcoords.append(v.imag)
+            canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
             canvas.create_text(x+75,y+75, text = harbtext[5], fill =harbcolor[5])
         elif i == 11:
+            rotcoords = []
+            cangle = cmath.exp(3.141*1j)
+            center = complex(x+length/2,y+yspace)
+            for x,y in harborcoords:
+                v = cangle * (complex(x, y) - center) + center
+                rotcoords.append(v.real)
+                rotcoords.append(v.imag)
+            canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
             canvas.create_text(x+25,y+100, text = harbtext[6], fill =harbcolor[6])
         elif i == 6:
+            rotcoords = []
+            cangle = cmath.exp(4*3.141/3*1j)
+            center = complex(x+length/2,y+yspace)
+            for x,y in harborcoords:
+                v = cangle * (complex(x, y) - center) + center
+                rotcoords.append(v.real)
+                rotcoords.append(v.imag)
+            canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
             canvas.create_text(x-25,y+75, text = harbtext[7], fill =harbcolor[7])
         elif i == 1:
+            rotcoords = []
+            cangle = cmath.exp(4*3.141/3*1j)
+            center = complex(x+length/2,y+yspace)
+            for x,y in harborcoords:
+                v = cangle * (complex(x, y) - center) + center
+                rotcoords.append(v.real)
+                rotcoords.append(v.imag)
+            canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
             canvas.create_text(x-25,y+75, text = harbtext[8], fill =harbcolor[8])
 
                       
@@ -189,6 +252,8 @@ def makenewboard(canvas, newharbors):
     '''
 
     global hexlist
+    global harbors
+
     random.seed()
     board = []
 
@@ -239,10 +304,12 @@ def makenewboard(canvas, newharbors):
 
 
 def shuffleboard(canvas,newharbors):
-    canvas.delete(all)
+    canvas.delete("all")
     global hexlist
     random.shuffle(hexlist)
-    drawboard(canvas,hexlist,newharbors)
+    if newharbors == 1:
+        random.shuffle(harbors)
+    drawboard(canvas,hexlist,harbors)
 
 
 
@@ -288,6 +355,13 @@ w.pack()
 
 
 def click(event):
+    x = root.winfo_pointerx()
+    y = root.winfo_pointery()
+    abs_coord_x = root.winfo_pointerx() - root.winfo_rootx()
+    abs_coord_y = root.winfo_pointery() - root.winfo_rooty()
+
+    print(abs_coord_x, abs_coord_y)
+    
     if w.find_withtag(CURRENT):
         ids = w.find_withtag(CURRENT)
         #w.itemconfig(CURRENT, width = 4)

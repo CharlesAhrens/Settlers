@@ -2,10 +2,11 @@ from Tkinter import *
 import math
 import cmath
 import random
+from __builtin__ import round
 
 root = Tk()
-
-
+root.title("Settlers")
+root.iconbitmap("error")
 class Hex:
     '''Returns a hexagon generator for hexagons of the specified size.'''
     def __init__(self, num, terrain, name):
@@ -47,7 +48,7 @@ def generate_hex(edge_length, offset):
 
 def drawboard(canvas, tiles, harbors):
 
-    canvas.delete(all)
+    canvas.delete("all")
     length = 50
     orig_x = 250
     orig_y = 200
@@ -300,6 +301,9 @@ def makenewboard(canvas, newharbors):
         random.shuffle(board)
 
     hexlist = board
+    if newharbors == 1:
+        random.shuffle(harbors)
+
     drawboard(canvas,hexlist,harbors)
 
 
@@ -311,7 +315,9 @@ def shuffleboard(canvas,newharbors):
         random.shuffle(harbors)
     drawboard(canvas,hexlist,harbors)
 
-
+def drawresource(canvas, resource, x, y):
+    if resource == "brick":
+        canvas.draw_rectangle([x,y,x+40,y+20])
 
 def donothing():
    filewin = Toplevel(root)
@@ -322,13 +328,16 @@ def donothing():
 w = Canvas(root, width=800, height=800)
 menubar = Menu(root)
 
-newharbors = 0
-makenewboard(w,newharbors)
+newharbors = BooleanVar()
+newharbors.set(False)
+
+makenewboard(w,newharbors.get())
 setupmenu = Menu(menubar, tearoff=0)
-setupmenu.add_checkbutton(label='Randomize Harbors', variable=newharbors)
-setupmenu.add_command(label='Make a New Board',command = lambda: makenewboard(w,newharbors))
-setupmenu.add_command(label='Shuffle Board', command = lambda: shuffleboard(w,newharbors))
+setupmenu.add_checkbutton(label='Randomize Harbors', onvalue = 1, offvalue = 0, variable=newharbors)
+setupmenu.add_command(label='Make a New Board',command = lambda: makenewboard(w,newharbors.get()))
+setupmenu.add_command(label='Shuffle Board', command = lambda: shuffleboard(w,newharbors.get()))
 setupmenu.add_separator()
+
 setupmenu.add_command(label='Play', command = donothing)
 menubar.add_cascade(label='Setup', menu = setupmenu)
 

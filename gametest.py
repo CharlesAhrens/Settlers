@@ -322,10 +322,7 @@ def drawresource(canvas, resource, x, y):
 def rolldice(canvas):
     random.seed()
 
-
-
-
-    border = canvas.create_rectangle(600,600, 800, 800, fill = 'white')
+    border = canvas.create_rectangle(600,600, 799, 799, fill = 'white')
     canvas.create_text(700,610, text = 'Dice Roll')
     #reddice = canvas.create_rectangle(dice1x, dice1y, dice1x+50, dice1y+50, fill = "red")
     #yellowdice = canvas.create_rectangle(dice2x, dice2y, dice2x+50, dice2y+50, fill = "yellow")
@@ -334,11 +331,14 @@ def rolldice(canvas):
     val = [0, 0]
     for i in range(2):
         val[i] = random.randrange(1,6)
-        x = random.randrange(650, 750)
-        y = random.randrange(650, 750)
-        print("\nvalue", val[i])
+        if i == 0:
+            x = random.randrange(620, 700)
+        else:
+            x = random.randrange(680, 760)
+        y = random.randrange(620, 760)
+
         
-        coords = [x, y], [x+40, y], [x+40, y+40], [x, y+40], [x,y] 
+        coords = [x+2, y], [x+38, y], [x+40, y+2],[x+40, y+38], [x+38, y+40],[x+2, y+40],[x,y+38], [x,y+2], [x,y] 
         if val[i] == 1:
             pips = [x+20,y+20]
         elif val[i] == 2:
@@ -362,14 +362,13 @@ def rolldice(canvas):
             rotcoords.append(v.real)
             rotcoords.append(v.imag)
 
-        print len(pips)
-        if len(pips) < 2:
-                x = pips[0][0]
-                y = pips[0][1]
+        if val[i] == 1:
+                x = pips[0]
+                y = pips[1]
                 print(x,y)
                 v = cangle * (complex(x, y) - center) + center
                 pipcoords.append((v.real,v.imag))              
-        else:
+        elif val[i] > 1:
             for x,y in pips:
                 v = cangle * (complex(x, y) - center) + center
                 pipcoords.append((v.real,v.imag))
@@ -383,7 +382,18 @@ def rolldice(canvas):
  
 
     total = val[0]+val[1]
-    print(val[0], val[1], total)
+
+    for hex in hexlist:
+        if hex.roll_num == total:
+            name = hex.name
+            id = canvas.find_withtag(name)
+            canvas.itemconfig(id, outline = 'red')
+        else:
+            name = hex.name
+            id = canvas.find_withtag(name)
+            canvas.itemconfig(id, outline = '#ffffe6')
+        
+
 
 def donothing():
    filewin = Toplevel(root)

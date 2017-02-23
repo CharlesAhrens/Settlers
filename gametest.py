@@ -201,7 +201,6 @@ def drawboard(canvas, tiles, harbors):
 
 
 
-
 def conflicts(board):
     #for 0 neighbors =                      i+1 i+3 i+4
     #for 1 neighbors =                  i-1 i+1 i+3 i+4
@@ -319,6 +318,73 @@ def drawresource(canvas, resource, x, y):
     if resource == "brick":
         canvas.draw_rectangle([x,y,x+40,y+20])
 
+
+def rolldice(canvas):
+    random.seed()
+
+
+
+
+    border = canvas.create_rectangle(600,600, 800, 800, fill = 'white')
+    canvas.create_text(700,610, text = 'Dice Roll')
+    #reddice = canvas.create_rectangle(dice1x, dice1y, dice1x+50, dice1y+50, fill = "red")
+    #yellowdice = canvas.create_rectangle(dice2x, dice2y, dice2x+50, dice2y+50, fill = "yellow")
+
+    dice = 0
+    val = [0, 0]
+    for i in range(2):
+        val[i] = random.randrange(1,6)
+        x = random.randrange(650, 750)
+        y = random.randrange(650, 750)
+        print("\nvalue", val[i])
+        
+        coords = [x, y], [x+40, y], [x+40, y+40], [x, y+40], [x,y] 
+        if val[i] == 1:
+            pips = [x+20,y+20]
+        elif val[i] == 2:
+            pips = [x+10,y+10],[x+30,y+30]
+        elif val[i] == 3:
+            pips = [x+10,y+10],[x+20,y+20],[x+30,y+30]
+        elif val[i] == 4:
+            pips = [x+10,y+10],[x+30,y+10],[x+30,y+30],[x+10,y+30]
+        elif val[i] == 5:
+            pips = [x+10,y+10],[x+30,y+10],[x+30,y+30],[x+10,y+30],[x+20,y+20]
+        elif val[i] == 6:
+            pips = [x+10,y+10],[x+10,y+20],[x+10,y+30],[x+30,y+10],[x+30,y+20],[x+30,y+30]
+
+        rotcoords = []
+        pipcoords = []
+        angle = random.randrange(0,360)
+        cangle = cmath.exp(angle/180.0*3.141*1j)
+        center = complex(x+20,y+20)
+        for x,y in coords:
+            v = cangle * (complex(x, y) - center) + center
+            rotcoords.append(v.real)
+            rotcoords.append(v.imag)
+
+        print len(pips)
+        if len(pips) < 2:
+                x = pips[0][0]
+                y = pips[0][1]
+                print(x,y)
+                v = cangle * (complex(x, y) - center) + center
+                pipcoords.append((v.real,v.imag))              
+        else:
+            for x,y in pips:
+                v = cangle * (complex(x, y) - center) + center
+                pipcoords.append((v.real,v.imag))
+        if i == 0:
+            color = 'red'
+        else:
+            color = 'yellow'
+        canvas.create_polygon(rotcoords, fill = color)
+        for x,y in pipcoords:
+            canvas.create_oval(x-2,y-2,x+2,y+2, fill = 'black')
+ 
+
+    total = val[0]+val[1]
+    print(val[0], val[1], total)
+
 def donothing():
    filewin = Toplevel(root)
    button = Button(filewin, text='Do nothing button')
@@ -332,6 +398,7 @@ newharbors = BooleanVar()
 newharbors.set(False)
 
 makenewboard(w,newharbors.get())
+
 setupmenu = Menu(menubar, tearoff=0)
 setupmenu.add_checkbutton(label='Randomize Harbors', onvalue = 1, offvalue = 0, variable=newharbors)
 setupmenu.add_command(label='Make a New Board',command = lambda: makenewboard(w,newharbors.get()))
@@ -339,6 +406,7 @@ setupmenu.add_command(label='Shuffle Board', command = lambda: shuffleboard(w,ne
 setupmenu.add_separator()
 
 setupmenu.add_command(label='Play', command = donothing)
+setupmenu.add_command(label= 'Roll', command = lambda: rolldice(w))
 menubar.add_cascade(label='Setup', menu = setupmenu)
 
 

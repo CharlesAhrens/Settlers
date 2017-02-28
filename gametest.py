@@ -5,8 +5,33 @@ import random
 from __builtin__ import round
 
 root = Tk()
+
+logodata = """"
+#define im_width 16
+#define im_height 16
+static char im_bits[] = {
+0x01,0x80,0x06,0x60,
+0x18,0x18,0x63,0xa6,
+0x86,0x61,0x8c,0x21,
+0x8c,0x01,0x8c,0x01,
+0x8c,0x01,0x8c,0x01,
+0x8c,0x01,0x86,0x21,
+0x63,0xc6,0x18,0x18,
+0x06,0x60,0x01,0x80
+};
+"""
+
+bitmap = BitmapImage(
+    data=logodata,
+    foreground = "yellow", background = "red"
+    )
+
+
 root.title("Settlers")
+img = PhotoImage(file = 'logo.bmp')
+root.tk.call('wm', 'iconphoto', root._w, img)
 root.iconbitmap("error")
+
 class Hex:
     '''Returns a hexagon generator for hexagons of the specified size.'''
     def __init__(self, num, terrain, name):
@@ -82,7 +107,7 @@ def drawboard(canvas, tiles, harbors):
             harbcolor.append('white')
             harbtext.append('2:1') 
 
-    canvas.create_polygon([425,30,685,180,685,480,425,630,165,480,165,180], fill = 'cyan',stipple = 'gray50', width = 0)
+    canvas.create_polygon([430,30,690,180,690,480,430,630,170,480,170,180], fill = 'cyan',stipple = 'gray50', width = 0)
     for h in tiles:
         coords = generate_hex(length,(x,y))
         color = 'red'
@@ -100,7 +125,7 @@ def drawboard(canvas, tiles, harbors):
         
 
         harborcoords = [x,y],[x+length,y], [x+length, y-length/4],[x+length-5,y-length/4],[x+length-10, y-5],[x+10, y-5],[x+5,y-length/4],[x+0,y-length/4],[x,y]
- 
+        
         if i == 0:
             rotcoords = []
             cangle = cmath.exp(5*3.141/3*1j)
@@ -199,7 +224,29 @@ def drawboard(canvas, tiles, harbors):
             x = orig_x + 4*xspace
             y = orig_y
 
+def drawresource(type,x,y,rotation,canvas):
+    rotcoords = []
+    cangle = cmath.exp(rotation*3.141/180.0*1j)
+    center = complex(x,y)
+    if type == 'wool':
+        coords = [[x-4, y-10], [x+10, y], [x-15, y-5], [x+3, y+10], [x, y-3], [x+15, y+10]]
+    elif type == 'brick':
+        coords = [[x-15,y] ,[x-1,y] ,[x-1,y+7],[x-15,y+7],[x-15,y], [x+1,y], [x+16,y], [x+16, y+7], [x+1,y+7], [x+1, y], [x-7, y-8], [x+7, y-8], [x+7, y-2], [x-7, y-2]]
 
+
+    for x1,y1 in coords:
+        v = cangle * (complex(x1, y1) - center) + center
+        rotcoords.append(v.real)
+        rotcoords.append(v.imag)
+    
+    if type == 'wool':
+        canvas.create_oval(rotcoords[0:4], fill = 'white', width = 0)
+        canvas.create_oval(rotcoords[4:8], fill = 'white', width = 0)
+        canvas.create_oval(rotcoords[8:], fill = 'white', width = 0)
+    elif type == 'brick':
+        canvas.create_polygon(rotcoords[0:10], fill = 'red', width = 0)
+        canvas.create_polygon(rotcoords[10:20], fill = 'red', width = 0)
+        canvas.create_polygon(rotcoords[20:], fill = 'red', width = 0)    
 
 def conflicts(board):
     #for 0 neighbors =                      i+1 i+3 i+4
@@ -309,14 +356,12 @@ def makenewboard(canvas, newharbors):
 def shuffleboard(canvas,newharbors):
     canvas.delete("all")
     global hexlist
-    random.shuffle(hexlist)
+    while conflicts(hexlist):
+        random.shuffle(hexlist)
+
     if newharbors == 1:
         random.shuffle(harbors)
     drawboard(canvas,hexlist,harbors)
-
-def drawresource(canvas, resource, x, y):
-    if resource == "brick":
-        canvas.draw_rectangle([x,y,x+40,y+20])
 
 
 def rolldice(canvas):
@@ -401,6 +446,9 @@ def donothing():
    button.pack()
 
 
+def play():
+    menubar.entryconfig("Setup", state="disabled")
+
 w = Canvas(root, width=800, height=800)
 menubar = Menu(root)
 
@@ -412,10 +460,10 @@ makenewboard(w,newharbors.get())
 setupmenu = Menu(menubar, tearoff=0)
 setupmenu.add_checkbutton(label='Randomize Harbors', onvalue = 1, offvalue = 0, variable=newharbors)
 setupmenu.add_command(label='Make a New Board',command = lambda: makenewboard(w,newharbors.get()))
-setupmenu.add_command(label='Shuffle Board', command = lambda: shuffleboard(w,newharbors.get()))
+#setupmenu.add_command(label='Shuffle Board', command = lambda: shuffleboard(w,newharbors.get()))
 setupmenu.add_separator()
 
-setupmenu.add_command(label='Play', command = donothing)
+setupmenu.add_command(label='Play', command = lambda:play())
 setupmenu.add_command(label= 'Roll', command = lambda: rolldice(w))
 menubar.add_cascade(label='Setup', menu = setupmenu)
 
@@ -439,6 +487,13 @@ menubar.add_cascade(label='Help', menu=helpmenu)
 
 root.config(menu=menubar)
 w.pack()
+
+drawresource('wool', 100,100, 0, w) 
+drawresource('brick', 150,100, 0, w) 
+drawresource('wool', 100,150, 45, w) 
+drawresource('brick', 150,150, 135, w) 
+
+
 
 
 def click(event):

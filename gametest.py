@@ -6,31 +6,8 @@ from __builtin__ import round
 
 root = Tk()
 
-logodata = """"
-#define im_width 16
-#define im_height 16
-static char im_bits[] = {
-0x01,0x80,0x06,0x60,
-0x18,0x18,0x63,0xa6,
-0x86,0x61,0x8c,0x21,
-0x8c,0x01,0x8c,0x01,
-0x8c,0x01,0x8c,0x01,
-0x8c,0x01,0x86,0x21,
-0x63,0xc6,0x18,0x18,
-0x06,0x60,0x01,0x80
-};
-"""
-
-bitmap = BitmapImage(
-    data=logodata,
-    foreground = "yellow", background = "red"
-    )
-
-
 root.title("Settlers")
-img = PhotoImage(file = 'logo.bmp')
-root.tk.call('wm', 'iconphoto', root._w, img)
-root.iconbitmap("error")
+root.tk.call('wm', 'iconbitmap', root._w, '-default', 'catan.ico')
 
 class Hex:
     '''Returns a hexagon generator for hexagons of the specified size.'''
@@ -135,14 +112,19 @@ def drawboard(canvas, tiles, harbors):
                 rotcoords.append(v.real)
                 rotcoords.append(v.imag)
             canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
-            canvas.create_text(x-25,y+10, text = harbtext[0], fill =harbcolor[0])
+            canvas.create_text(x-25,y+10, text = harbtext[0], fill = 'black')
+            drawresource(harbors[0], x - 50, y, canvas)
 
         elif i == 3:
             canvas.create_polygon(harborcoords, fill = '#ffffe6', width=2)
-            canvas.create_text(x+25,y-10, text = harbtext[1], fill =harbcolor[1])
+            canvas.create_text(x+25,y-10, text = harbtext[1], fill = 'black')
+            drawresource(harbors[1], x + 25, y - 30, canvas)
+
         elif i == 12:
             canvas.create_polygon(harborcoords, fill = '#ffffe6', width=2)
-            canvas.create_text(x+25,y-10, text = harbtext[2], fill =harbcolor[2])
+            canvas.create_text(x+25,y-10, text = harbtext[2], fill = 'black')
+            drawresource(harbors[2], x + 25, y - 30, canvas)
+
         elif i == 16:
             rotcoords = []
             cangle = cmath.exp(3.141/3*1j)
@@ -152,7 +134,9 @@ def drawboard(canvas, tiles, harbors):
                 rotcoords.append(v.real)
                 rotcoords.append(v.imag)
             canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
-            canvas.create_text(x+75,y+10, text = harbtext[3], fill =harbcolor[3])
+            canvas.create_text(x+75,y+10, text = harbtext[3],fill = 'black')
+            drawresource(harbors[3], x + 100, y, canvas)
+
         elif i == 17:
             rotcoords = []
             cangle = cmath.exp(2*3.141/3*1j)
@@ -162,7 +146,9 @@ def drawboard(canvas, tiles, harbors):
                 rotcoords.append(v.real)
                 rotcoords.append(v.imag)
             canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
-            canvas.create_text(x+75,y+75, text = harbtext[4], fill =harbcolor[4])
+            canvas.create_text(x+75,y+75, text = harbtext[4], fill = 'black')
+            drawresource(harbors[4], x + 100, y+75, canvas)
+
         elif i == 15:
             rotcoords = []
             cangle = cmath.exp(2*3.141/3*1j)
@@ -172,7 +158,9 @@ def drawboard(canvas, tiles, harbors):
                 rotcoords.append(v.real)
                 rotcoords.append(v.imag)
             canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
-            canvas.create_text(x+75,y+75, text = harbtext[5], fill =harbcolor[5])
+            canvas.create_text(x+75,y+75, text = harbtext[5], fill = 'black')
+            drawresource(harbors[5], x + 100, y+75, canvas)
+
         elif i == 11:
             rotcoords = []
             cangle = cmath.exp(3.141*1j)
@@ -182,7 +170,9 @@ def drawboard(canvas, tiles, harbors):
                 rotcoords.append(v.real)
                 rotcoords.append(v.imag)
             canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
-            canvas.create_text(x+25,y+100, text = harbtext[6], fill =harbcolor[6])
+            canvas.create_text(x+25,y+100, text = harbtext[6],fill = 'black')
+            drawresource(harbors[6], x + 25, y+125, canvas)
+
         elif i == 6:
             rotcoords = []
             cangle = cmath.exp(4*3.141/3*1j)
@@ -192,7 +182,9 @@ def drawboard(canvas, tiles, harbors):
                 rotcoords.append(v.real)
                 rotcoords.append(v.imag)
             canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
-            canvas.create_text(x-25,y+75, text = harbtext[7], fill =harbcolor[7])
+            canvas.create_text(x-25,y+75, text = harbtext[7], fill = 'black')
+            drawresource(harbors[7], x - 50, y+75, canvas)
+
         elif i == 1:
             rotcoords = []
             cangle = cmath.exp(4*3.141/3*1j)
@@ -202,7 +194,9 @@ def drawboard(canvas, tiles, harbors):
                 rotcoords.append(v.real)
                 rotcoords.append(v.imag)
             canvas.create_polygon(rotcoords, fill = '#ffffe6', width=2)
-            canvas.create_text(x-25,y+75, text = harbtext[8], fill =harbcolor[8])
+            canvas.create_text(x-25,y+75, text = harbtext[8], fill = 'black')
+            drawresource(harbors[8], x - 50, y+75, canvas)
+
 
                       
 
@@ -224,29 +218,32 @@ def drawboard(canvas, tiles, harbors):
             x = orig_x + 4*xspace
             y = orig_y
 
-def drawresource(type,x,y,rotation,canvas):
-    rotcoords = []
-    cangle = cmath.exp(rotation*3.141/180.0*1j)
-    center = complex(x,y)
-    if type == 'wool':
-        coords = [[x-4, y-10], [x+10, y], [x-15, y-5], [x+3, y+10], [x, y-3], [x+15, y+10]]
-    elif type == 'brick':
-        coords = [[x-15,y] ,[x-1,y] ,[x-1,y+7],[x-15,y+7],[x-15,y], [x+1,y], [x+16,y], [x+16, y+7], [x+1,y+7], [x+1, y], [x-7, y-8], [x+7, y-8], [x+7, y-2], [x-7, y-2]]
+def drawresource(type,x,y,canvas): 
 
-
-    for x1,y1 in coords:
-        v = cangle * (complex(x1, y1) - center) + center
-        rotcoords.append(v.real)
-        rotcoords.append(v.imag)
-    
-    if type == 'wool':
-        canvas.create_oval(rotcoords[0:4], fill = 'white', width = 0)
-        canvas.create_oval(rotcoords[4:8], fill = 'white', width = 0)
-        canvas.create_oval(rotcoords[8:], fill = 'white', width = 0)
+    if type == 'three':
+        canvas.create_text(x, y, font=("Arial", 20), text= "?", fill='blue')
     elif type == 'brick':
-        canvas.create_polygon(rotcoords[0:10], fill = 'red', width = 0)
-        canvas.create_polygon(rotcoords[10:20], fill = 'red', width = 0)
-        canvas.create_polygon(rotcoords[20:], fill = 'red', width = 0)    
+        canvas.create_polygon(x-15,y,x-1,y ,x-1,y+7,x-15,y+7,x-15,y, fill = 'red', width = 0)
+        x +=16
+        canvas.create_polygon(x-15,y,x-1,y ,x-1,y+7,x-15,y+7,x-15,y, fill = 'red', width = 0)
+        x -= 8
+        y -= 8
+        canvas.create_polygon(x-15,y,x-1,y ,x-1,y+7,x-15,y+7,x-15,y, fill = 'red', width = 0)
+    elif type == 'ore':
+        canvas.create_polygon(x-14, y+2, x-10, y-4, x-1, y-8, x+6, y-8, x+12, y-3, x+10, y+8, x-6, y+10, x-14, y+2, fill = 'gray', width=0)
+    elif type == 'grain':
+        x -= 6
+        y += 4
+        canvas.create_polygon(x-1, y+5,x+1, y+5, x+1, y, x+5, y-5, x+5, y-15, x, y-20,x-5,y-15,x-5, y-5, x-1, y, x-1, y+5,  fill = 'orange', width =0)
+        x += 12
+        canvas.create_polygon(x-1, y+5,x+1, y+5, x+1, y, x+5, y-5, x+5, y-15, x, y-20,x-5,y-15,x-5, y-5, x-1, y, x-1, y+5,  fill = 'orange', width =0)
+    elif type == 'lumber':
+        canvas.create_polygon(x-7, y-10, x-5, y-12, x+5, y-12, x+7, y-10, x+7, y-2, x+11, y-5, x+10, y-3, x+7, y+1, x+7, y+10, x+5, y+12, x-5, y+12, x-7, y+10, x-7, y-10, fill = 'brown', width = 0)
+    elif type == 'wool':
+        canvas.create_oval(x-4, y-10,x+10, y, fill = 'white', width = 0)
+        canvas.create_oval(x-15, y-5, x+3, y+10, fill = 'white', width = 0)
+        canvas.create_oval(x, y-3, x+15, y+10, fill = 'white', width = 0)
+   
 
 def conflicts(board):
     #for 0 neighbors =                      i+1 i+3 i+4
@@ -487,12 +484,6 @@ menubar.add_cascade(label='Help', menu=helpmenu)
 
 root.config(menu=menubar)
 w.pack()
-
-drawresource('wool', 100,100, 0, w) 
-drawresource('brick', 150,100, 0, w) 
-drawresource('wool', 100,150, 45, w) 
-drawresource('brick', 150,150, 135, w) 
-
 
 
 
